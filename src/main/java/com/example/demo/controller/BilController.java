@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Bil;
 import com.example.demo.model.Motorvogn;
+import com.example.demo.repository.BilRepository;
 import com.example.demo.repository.MotorvognRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -9,18 +11,18 @@ import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api")
-public class MotorvognController {
+public class BilController {
 
     @Autowired
-    MotorvognRepository repo;
+    BilRepository repo;
 
     @PostMapping("/motor")
-    public void lagre(Motorvogn motorvogn) {
+    public void lagre(Bil motorvogn) {
         repo.leggInn(motorvogn);
     }
 
     @GetMapping("/motor")
-    public ArrayList<Motorvogn> hent() {
+    public ArrayList<Bil> hent() {
         return repo.hentAlle();
     }
 
@@ -28,4 +30,9 @@ public class MotorvognController {
     public void slett() {
         repo.slettAlle();
     }
+
+    /*
+     * Utfordring:
+     * Lag en metode som tar inn merke og modell og sletter kun den bilen fra serveren
+     * */
 }
