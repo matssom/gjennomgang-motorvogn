@@ -16,17 +16,17 @@ public class BilController {
     @Autowired
     BilRepository repo;
 
-    @PostMapping("/motor")
+    @PostMapping("/bil")
     public void lagre(Bil motorvogn) {
         repo.leggInn(motorvogn);
     }
 
-    @GetMapping("/motor")
+    @GetMapping("/bil")
     public ArrayList<Bil> hent() {
         return repo.hentAlle();
     }
 
-    @DeleteMapping("/motor")
+    @DeleteMapping("/bil")
     public void slett() {
         repo.slettAlle();
     }

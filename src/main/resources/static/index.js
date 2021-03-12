@@ -1,11 +1,13 @@
+let biltyper = []
+
 $(() => {
     $("#regMotorvogn").click(() => {
         const personnr = $("#personnr");
         const navn = $("#navn");
         const adresse = $("#adresse");
         const kjennetegn = $("#kjennetegn");
-        const merke = $("#merke");
-        const type = $("#type");
+        const merke = $("#valgtMerke");
+        const type = $("#valgtType");
 
         const motorvogn = {
             personnr: personnr.val(),
@@ -17,14 +19,8 @@ $(() => {
         };
 
         if (inputval(motorvogn)) {
-            $.post("/api/motor", motorvogn, () => hent());
-            /*
-            $.post("/lagre", motorvogn, function (){
-                $.get("/hentAlle", function (biler) {
-                    formater(biler);
-                });
-            });
-             */
+            $.post("/api/motor", motorvogn, () => hentMotorvogner());
+
             personnr.val("");
             navn.val("");
             adresse.val("");
@@ -39,13 +35,44 @@ $(() => {
     $("#slettAlle").click(() => {
         $.ajax("/api/motor", {
             type: 'DELETE',
-            success: () => hent(),
+            success: () => hentMotorvogner(),
             error: (jqXhr, textStatus, errorMessage) => console.log(errorMessage)
         });
     });
+
+    hentBilmerker()
+    hentMotorvogner()
 });
 
-const hent = () => $.get("/api/motor", biler => formater(biler));
+const hentMotorvogner = () => $.get("/api/motor", motorvogner => formater(motorvogner));
+const hentBilmerker = () => $.get("/api/bil", biler => fyllInnBilmerker(biler));
+
+const fyllInnBilmodeller = () => {
+    const valgtMerke = $("#valgtMerke").val()
+    const filtrerteBiler = biltyper.filter((bil) => bil.merke === valgtMerke)
+
+    let ut = `
+    <select id="valgtType" class="custom-select">
+        ${filtrerteBiler.map(bil => `<option>${bil.type}</option>`)}
+    </select>
+    `
+
+    $("#type").html(ut)
+}
+
+const fyllInnBilmerker = biler => {
+    biltyper = biler
+    let unikeMerker =  biler.map(bil => bil.merke).filter((merke, index, array) => array.indexOf(merke) === index)
+
+    // her kan vi gjøre det mer avansert med å bruke event listeners, men det er et tema for en senere dag.
+    let ut = `
+    <select id="valgtMerke" onclick="fyllInnBilmodeller()" class="custom-select">
+        ${unikeMerker.map(merke => `<option>${merke}</option>`)}
+    </select>
+    `
+    $("#merke").html(ut)
+}
+
 
 const inputval = motorvogn => {
     if (motorvogn.personnr === "") return false
@@ -56,7 +83,7 @@ const inputval = motorvogn => {
     else return motorvogn.type !== "";
 }
 
-const formater = biler => {
+const formater = motorvogner => {
     let ut = `
     <table class="table table-striped">
         <tr>
@@ -67,28 +94,18 @@ const formater = biler => {
             <th>Merke</th>
             <th>Type</th>
         </tr>
-        ${biler.map(bil => {
+        ${motorvogner.map(motorvogn => {
             return `
             <tr>
-                <td>${bil.personnr}</td>
-                <td>${bil.navn}</td>
-                <td>${bil.adresse}</td>
-                <td>${bil.kjennetegn}</td>
-                <td>${bil.merke}</td>
-                <td>${bil.type}</td>
+                <td>${motorvogn.personnr}</td>
+                <td>${motorvogn.navn}</td>
+                <td>${motorvogn.adresse}</td>
+                <td>${motorvogn.kjennetegn}</td>
+                <td>${motorvogn.merke}</td>
+                <td>${motorvogn.type}</td>
             </tr>`    
         })}
     </table>
     `
-    /*
-    const rad = bil => `
-    <tr>
-        <td>${bil.personnr}</td>
-        <td>${bil.navn}</td>
-        <td>${bil.adresse}</td>
-        <td>${bil.kjennetegn}</td>
-        <td>${bil.merke}</td>
-        <td>${bil.type}</td>
-    </tr>`*/
     $("#bilene").html(ut);
 }
