@@ -1,58 +1,81 @@
 let biltyper = []
+let personnr, navn, adresse, kjennetegn, merke, type
 
 $(() => {
+    personnr = $("#personnr");
+    navn = $("#navn");
+    adresse = $("#adresse");
+    kjennetegn = $("#kjennetegn");
+
     $("#regMotorvogn").click(() => {
-        const personnr = $("#personnr");
-        const navn = $("#navn");
-        const adresse = $("#adresse");
-        const kjennetegn = $("#kjennetegn");
-        const merke = $("#valgtMerke");
-        const type = $("#valgtType");
-
-        const motorvogn = {
-            personnr: personnr.val(),
-            navn: navn.val(),
-            adresse: adresse.val(),
-            kjennetegn: kjennetegn.val(),
-            merke: merke.val(),
-            type: type.val()
-        };
-
-        if (inputval(motorvogn)) {
-            $.post("/api/motor", motorvogn, () => hentMotorvogner());
-
-            personnr.val("");
-            navn.val("");
-            adresse.val("");
-            kjennetegn.val("");
-            merke.val("");
-            type.val("");
-        } else {
-            console.log("Mangler input");
-        }
+        registrerMotorvogn()
     });
 
     $("#slettAlle").click(() => {
-        $.ajax("/api/motor", {
-            type: 'DELETE',
-            success: () => hentMotorvogner(),
-            error: (jqXhr, textStatus, errorMessage) => console.log(errorMessage)
-        });
+        api.slettMotorvogner()
     });
 
-    hentBilmerker()
-    hentMotorvogner()
+    api.hentBilmerker()
+    api.hentMotorvogner()
 });
 
-const hentMotorvogner = () => $.get("/api/motor", motorvogner => formater(motorvogner));
-const hentBilmerker = () => $.get("/api/bil", biler => fyllInnBilmerker(biler));
+/* Snakker med api'en */
+const api = {
+    hentMotorvogner: () => $.get("/api/motor", motorvogner => formater(motorvogner)),
+    opprettMotorvogn: motorvogn => $.post("/api/motor", motorvogn, () => api.hentMotorvogner()),
+    slettMotorvogner: () => $.ajax("/api/motor", {
+        type: 'DELETE',
+        success: () => api.hentMotorvogner(),
+        error: (jqXhr, textStatus, errorMessage) => console.log(errorMessage)
+    }),
+    hentBilmerker: () => $.get("/api/bil", biler => fyllInnBilmerker(biler))
+}
+
+const registrerMotorvogn = () => {
+    merke = $("#valgtMerke");
+    type = $("#valgtType");
+
+    const motorvogn = {
+        personnr: personnr.val(),
+        navn: navn.val(),
+        adresse: adresse.val(),
+        kjennetegn: kjennetegn.val(),
+        merke: merke.val(),
+        type: type.val()
+    };
+
+    if (inputval(motorvogn)) {
+        api.opprettMotorvogn(motorvogn)
+        resetFelter()
+    } else {
+        console.log("Mangler input");
+    }
+}
+
+const inputval = motorvogn => {
+    if (motorvogn.personnr === "") return false
+    else if (motorvogn.navn === "") return false
+    else if (motorvogn.adresse === "") return false
+    else if (motorvogn.kjennetegn === "") return false
+    else if (motorvogn.merke === "") return false
+    else return motorvogn.type !== "";
+}
+
+const resetFelter = () => {
+    personnr.val("");
+    navn.val("");
+    adresse.val("");
+    kjennetegn.val("");
+    merke.val("");
+    type.val("");
+}
 
 const fyllInnBilmodeller = () => {
     const valgtMerke = $("#valgtMerke").val()
     const filtrerteBiler = biltyper.filter((bil) => bil.merke === valgtMerke)
 
     let ut = `
-    <select id="valgtType" class="custom-select">
+    <select id="valgtType" class="form-control">
         ${filtrerteBiler.map(bil => `<option>${bil.type}</option>`)}
     </select>
     `
@@ -66,21 +89,11 @@ const fyllInnBilmerker = biler => {
 
     // her kan vi gjøre det mer avansert med å bruke event listeners, men det er et tema for en senere dag.
     let ut = `
-    <select id="valgtMerke" onclick="fyllInnBilmodeller()" class="custom-select">
+    <select id="valgtMerke" onclick="fyllInnBilmodeller()" class="form-control">
         ${unikeMerker.map(merke => `<option>${merke}</option>`)}
     </select>
     `
     $("#merke").html(ut)
-}
-
-
-const inputval = motorvogn => {
-    if (motorvogn.personnr === "") return false
-    else if (motorvogn.navn === "") return false
-    else if (motorvogn.adresse === "") return false
-    else if (motorvogn.kjennetegn === "") return false
-    else if (motorvogn.merke === "") return false
-    else return motorvogn.type !== "";
 }
 
 const formater = motorvogner => {
