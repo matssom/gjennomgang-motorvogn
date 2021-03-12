@@ -17,6 +17,9 @@ Hvis du skriver inn denne linjen mens du er plassert inni folderen hvor du vanli
 
 **NB:** Det er ikke nødvendig å klone repoet for å følge min løsning. Du kan fint bruke din egen tidligere oppgave og bygge videre på den. Det vil bare gjøre forståelsen bedre når du må tilpasse koden for å passe din situasjon.
 
+<br>
+
+## Lenker
 
 **Link til static (frontend) folder**
 [Her](https://github.com/matssom/gjennomgang-motorvogn/tree/master/src/main/resources/static)
