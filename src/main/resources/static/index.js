@@ -1,3 +1,4 @@
+
 $(() => {
     $("#regMotorvogn").click(() => {
         const personnr = $("#personnr");
@@ -17,14 +18,8 @@ $(() => {
         };
 
         if (inputval(motorvogn)) {
-            $.post("/api/motor", motorvogn, () => hent());
-            /*
-            $.post("/lagre", motorvogn, function (){
-                $.get("/hentAlle", function (biler) {
-                    formater(biler);
-                });
-            });
-             */
+            opprettMotorvogn(motorvogn)
+
             personnr.val("");
             navn.val("");
             adresse.val("");
@@ -37,15 +32,18 @@ $(() => {
     });
 
     $("#slettAlle").click(() => {
-        $.ajax("/api/motor", {
-            type: 'DELETE',
-            success: () => hent(),
-            error: (jqXhr, textStatus, errorMessage) => console.log(errorMessage)
-        });
+        slettMotorvogner()
     });
 });
 
-const hent = () => $.get("/api/motor", biler => formater(biler));
+// api metoder
+const hentMotorvogner = () => $.get("/api/motor", motorvogner => formater(motorvogner))
+const opprettMotorvogn = motorvogn => $.post("/api/motor", motorvogn, () => hentMotorvogner())
+const slettMotorvogner = () => $.ajax("/api/motor", {
+    type: 'DELETE',
+    success: () => hentMotorvogner(),
+    error: (jqXhr, textStatus, errorMessage) => console.log(errorMessage)
+})
 
 const inputval = motorvogn => {
     if (motorvogn.personnr === "") return false
