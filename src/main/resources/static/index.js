@@ -57,15 +57,38 @@ const inputval = motorvogn => {
 }
 
 const formater = biler => {
-    let ut = "<table><tr><th>Personnr</th><th>Navn</th><th>Adresse</th>" +
-        "<th>Kjennetegn</th><th>Merke</th><th>Type</th></tr>";
-
-    for (let bil of biler) {
-        ut += "<tr><td>" + bil.personnr + "</td><td>" + bil.navn + "</td><td>" + bil.adresse + "</td>" +
-            "<td>" + bil.kjennetegn + "</td><td>" + bil.merke + "</td><td>" + bil.type + "</td></tr>";
-    }
-
-    ut += "</table>";
-
+    let ut = `
+    <table class="table table-striped">
+        <tr>
+            <th>Personnr</th>
+            <th>Navn</th>
+            <th>Adresse</th>
+            <th>Kjennetegn</th>
+            <th>Merke</th>
+            <th>Type</th>
+        </tr>
+        ${biler.map(bil => {
+            return `
+            <tr>
+                <td>${bil.personnr}</td>
+                <td>${bil.navn}</td>
+                <td>${bil.adresse}</td>
+                <td>${bil.kjennetegn}</td>
+                <td>${bil.merke}</td>
+                <td>${bil.type}</td>
+            </tr>`    
+        })}
+    </table>
+    `
+    /*
+    const rad = bil => `
+    <tr>
+        <td>${bil.personnr}</td>
+        <td>${bil.navn}</td>
+        <td>${bil.adresse}</td>
+        <td>${bil.kjennetegn}</td>
+        <td>${bil.merke}</td>
+        <td>${bil.type}</td>
+    </tr>`*/
     $("#bilene").html(ut);
 }
